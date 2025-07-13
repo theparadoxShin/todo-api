@@ -16,10 +16,10 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->enum('status', ['pending', 'in_progress', 'completed'])->default('pending');
-
             $table->boolean('is_completed')->default(false);
             $table->integer('priority')->default(0); // 0: low, 1: medium, 2: high
             $table->timestamp('due_date')->nullable();
+            $table->timestamps();
 
             $table->foreignId('user_id')->after('id')->constrained()->cascadeOnDelete();
 
