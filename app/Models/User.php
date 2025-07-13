@@ -45,4 +45,31 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /*
+     * Relation with tasks
+     */
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    /**
+     * Get the user's statistics.
+     */
+    public function getStatsAttribute()
+    {
+        return [
+            'total_tasks' => $this->tasks()->count(),
+            'completed_tasks' => $this->tasks()->where('is_completed', true)->count(),
+            'pending_tasks' => $this->tasks()->where('is_completed', false)->count(),
+            'high_priority_tasks' => $this->tasks()->where('priority', 2)->where('is_completed', false)->count(),
+        ];
+    }
+    /**
+     * Get the user's active_tasks.
+     */
+    public function getActiveTasksAttribute(){
+        return $this->tasks()->where('is_completed', false)->get();
+    }
 }
