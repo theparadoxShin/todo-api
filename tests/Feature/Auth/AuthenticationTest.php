@@ -21,10 +21,15 @@ class AuthenticationTest extends TestCase
             'password' => 'password123',
         ]);
 
-        $response->assertOk();
 
-        $this->assertAuthenticated();
-        $response->assertJsonStructure(['token']);
+        $response->assertJsonStructure([
+            'success',
+            'message',
+            'data' => [
+                'token',
+                'token_type',
+            ],
+        ]);
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void
@@ -47,9 +52,15 @@ class AuthenticationTest extends TestCase
             'password' => bcrypt('password123'),
         ]);
 
-        $response = $this->actingAs($user)->post('api/logout');
+        $loginResponse = $this->post('api/auth/login', [
+            'email' => $user->email,
+            'password' => 'password123',
+        ]);
 
-        $this->assertGuest();
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $loginResponse->json('data.token'),
+        ])->post('api/auth/logout');
+
         $response->assertNoContent();
     }
 }

@@ -10,9 +10,13 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 });
 
 // Public routes (No authentication required)
-Route::prefix('auth')->group(function () {
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
+Route::middleware('api')->group(function () {
+    Route::prefix('auth')->group(function () {
+        Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::get('/me', [AuthController::class, 'me']);
+        Route::post('/refresh', [AuthController::class, 'refresh']);
+    });
 });
 
 // Protected routes (Authenticated users only)
